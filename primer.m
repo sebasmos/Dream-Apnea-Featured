@@ -32,15 +32,3 @@ for i=1:8
 end
 
 
-%% Obtiene 2000 muestras de las se�ales ECGI y ABP
-
-N =60000;
-[signal,fs,tm]= rdsamp(BaseDatos, [1 5], N);
-EKG = signal(:,1);
-BP = signal(:,2);
-subplot(2,1,1);
-plot(tm,EKG);
-title('ECGI');
-subplot(2,1,2);
-plot(tm,BP);
-title('ABP');
