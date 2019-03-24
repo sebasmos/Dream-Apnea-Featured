@@ -35,25 +35,13 @@ for i=1:8
     SPO2(:,i)=signal(:,5);
 end
 
-ECG=ECG';
-respA=respA';
-respC=respC';
-respN=respN';
-SPO2=SPO2';
 %% PARA PROPOSITOS DE VISUALIZACION
-t1m=(1:6000)/fs;
-t30s=(1:3000)/fs;
-t30m=(1:30000)/fs;
-t1h=(1:60000)/fs;
+t1m=(0:6000)/fs;
+t30s=(0:3000)/fs;
+t30m=(0:30000)/fs;
+t1h=(0:60000)/fs;
 
-figure(1)
-subplot(3,1,1), plot(t30s,respA(1,(1:3000))'),grid on, axis tight
-subplot(3,1,2), plot(t30s,respC(1,(1:3000))'),grid on, axis tight
-subplot(3,1,3), plot(t30s,respN(1,(1:3000))'),grid on, axis tight
-
-figure(2)
-subplot(2,1,1), plot(t30s,ECG(1,(1:3000))'),grid on, axis tight
-subplot(2,1,2), plot(t30s,SPO2(1,(1:3000))'),grid on, axis tight
+subplot(3,1,1), plot(t30s,respA(1,()))
 
 
 
