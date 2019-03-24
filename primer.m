@@ -20,7 +20,7 @@ for i=1:3
 end
 names{end}='b01er';
 
-N =60000; %declaro esto para sacar 60000 muestras equivalentes a 
+N =1000000; %declaro esto para sacar 60000 muestras equivalentes a 
           %aproximadamente 1 minuto de la señal, pues: 100 Hz es la
           %frecuencia de muestreo, cada segundo tomo 100 muestras entonces
           %en un minuto tomo 100*60=6000, si sacamos 60000 es una hora
@@ -41,20 +41,27 @@ respC=respC';
 respN=respN';
 SPO2=SPO2';
 %% PARA PROPOSITOS DE VISUALIZACION
-t1m=(1:6000)/fs;
-t30s=(1:3000)/fs;
-t30m=(1:30000)/fs;
-t1h=(1:60000)/fs;
+% t1m=(1:6000)/fs;
+% t30s=(1:3000)/fs;
+% t30m=(1:30000)/fs;
+% t1h=(1:60000)/fs;
+% 
+% figure(1)
+% subplot(3,1,1), plot(t30s,respA(1,(1:3000))'),grid on, axis tight
+% subplot(3,1,2), plot(t30s,respC(1,(1:3000))'),grid on, axis tight
+% subplot(3,1,3), plot(t30s,respN(1,(1:3000))'),grid on, axis tight
+% 
+% figure(2)
+% subplot(2,1,1), plot(t30s,ECG(1,(1:3000))'),grid on, axis tight
+% subplot(2,1,2), plot(t30s,SPO2(1,(1:3000))'),grid on, axis tight
 
-figure(1)
-subplot(3,1,1), plot(t30s,respA(1,(1:3000))'),grid on, axis tight
-subplot(3,1,2), plot(t30s,respC(1,(1:3000))'),grid on, axis tight
-subplot(3,1,3), plot(t30s,respN(1,(1:3000))'),grid on, axis tight
+%% ESCOGEMOS UN RECORD PARA HACERLE LA CLASIFICACION DE ENTRENAMIENTO
 
-figure(2)
-subplot(2,1,1), plot(t30s,ECG(1,(1:3000))'),grid on, axis tight
-subplot(2,1,2), plot(t30s,SPO2(1,(1:3000))'),grid on, axis tight
+%Primero vamos a sacar los latidos cardíacos.
 
-
-
-
+ECG1=ECG(1,(1:12000));
+%plot((1:6000)/fs,ECG1),grid on, axis tight;
+dECG1=detrend(ECG1);
+ECGF = (abs(dECG1)).^2;
+plot((1:12000)/fs,ECGF,(1:12000)/fs,ECG1),grid on, axis tight;
+[PKSECG,LOCSECG]=GetECGPeakPoints(ECGF,1);
