@@ -149,12 +149,9 @@ xlabel('Seconds')
 title('R Peaks Localized by Wavelet Transform with Automatic Annotations')
 
 %% PROCESAMIENTO DE SEÑALES RESPIRATORIAS
-m=30000;
-
-rsigc=FullrespC(1,(12001:m));
-rsiga=FullrespA(1,(12001:m));
-t3m=(0:length(rsigc)-1)/fs;
+m=18000;
+t3m=(1:m-1)/fs;
+rsigc=FullrespC(1,(1:m));
 drsigc=detrend(rsigc);
-drsiga=detrend(rsiga);
-subplot(2,1,1), plot(t3m,drsiga),grid on, axis tight
-subplot(2,1,2), plot(t3m,drsigc),grid on, axis tight
+subplot(2,1,1), plot(t3m,rsigc(1,(1:m))'),grid on, axis tight
+subplot(2,1,2), plot(t3m,drsigc(1,(1:m))'),grid on, axis tight
