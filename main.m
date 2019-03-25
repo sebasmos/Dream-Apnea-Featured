@@ -2,8 +2,10 @@ clc;
 close all;
 clear all;
 addpath('C:\MATLAB2018\MATLAB\mcode\BioMedicine\Dream Abnea\BiomedicasFinal\apnea-ecg');
-% Partition
+% m represents the size 
 m = 3000;
+% NUMBER OF DATASETS 
+N = 7;
 % STRING MEMORY BANK
 names=cell(8,1);
 for i = 1:4
@@ -15,7 +17,7 @@ for i=1:3
     names{i+4}=string;
 end
 % SAVE IN PHYSICAL UNITS
-for i = 1:7
+for i = 1:N
     signal      =  load(char(names{i}));
     signal      =  signal.val;
     ECG(:,i)    =  (signal(1,:)+30)./200;
@@ -23,48 +25,77 @@ for i = 1:7
     RespC(:,i)  =  (signal(3,:)+1903)./20000;
     RespN(:,i)  =  (signal(4,:)+1903)./20000;
     SpO2(:,i)   =  signal(5,:);
+
 end
-% NORMALIZATION MIN MAX
-FullECG = (ECG(:,1)-min(ECG(:,1)))./(max(ECG(:,1))-min(ECG(:,1)));
-FullRespC = (RespC(:,2)-min(RespC(:,2)))./(max(RespC(:,2))-min(RespC(:,2)));
-FullRespA = (RespA(:,3)-min(RespA(:,3)))./(max(RespA(:,3))-min(RespA(:,3)));
-FullRespN = (RespN(:,4)-min(RespN(:,4)))./(max(RespN(:,4))-min(RespN(:,4)));
-FullSpO2 = (SpO2(:,5)-min(SpO2(:,5)))./(max(SpO2(:,5))-min(SpO2(:,5)));
-%  Normalization
+
+    % NORMALIZATION MIN MAX
+    FullECG   = (ECG-min(ECG))./(max(ECG)-min(ECG));    
+    FullRespC = (RespC-min(RespC))./(max(RespC)-min(RespC));
+    FullRespA = (RespA-min(RespA))./(max(RespA)-min(RespA));
+    FullRespN = (RespN-min(RespN))./(max(RespN)-min(RespN));
+    FullSpO2  = (SpO2-min(SpO2))./(max(SpO2)-min(SpO2));
+
 % Sample Frequency
-fs = 100;
-% Square for easier peak detection
-ECGa = abs(FullECG((1:3000),1)).^2;
-
-% [R1,TR1]=findpeaks(ECGa(1:3000),fs,'MinPeakHeight',max(ECGa)*0.4);
-
-[R1,TR1]=findpeaks(ECGa,fs,'MinPeakHeight',0.35);
+Fs = 100;
+% Squared for easier peak detection
+for k = 1:N
+        ECGSquared(:,k) = abs(FullECG((1:m),k)).^2;  
+end
+ECGSquared = ECGSquared';
+% PEAKS DETECTION
+[R1,TR1]=findpeaks(ECGSquared(1,(1:m)),Fs,'MinPeakHeight',0.35);
+[R2,TR2]=findpeaks(ECGSquared(2,(1:m)),Fs,'MinPeakHeight',0.35);
+[R3,TR3]=findpeaks(ECGSquared(3,(1:m)),Fs,'MinPeakHeight',0.35);
+[R4,TR4]=findpeaks(ECGSquared(4,(1:m)),Fs,'MinPeakHeight',0.35);
+[R5,TR5]=findpeaks(ECGSquared(5,(1:m)),Fs,'MinPeakHeight',0.35);
+[R6,TR6]=findpeaks(ECGSquared(6,(1:m)),Fs,'MinPeakHeight',0.35);
+[R7,TR7]=findpeaks(ECGSquared(7,(1:m)),Fs,'MinPeakHeight',0.35);
 
 %% PARA PROPOSITOS DE VISUALIZACION
-t    = [0:m-1]/fs;
-t1m=(1:6000)/fs;
-t30s= [0:3000-1]./fs;
-t5min = (1:30000)/fs;
-t30m=(1:180000)/fs;
-t1h=(1:360000)/fs;
- figure
-plot(t,ECGa),grid on, axis tight
+t    = [0:m-1]/Fs;
+t1m=(1:6000)/Fs;
+t30s= [0:3000-1]./Fs;
+t5min = (1:30000)/Fs;
+t30m=(1:180000)/Fs;
+t1h=(1:360000)/Fs;
+figure
+plot(t,ECGSquared(1,:)),grid on, axis tight
 hold on
 plot(TR1,R1,'^r'),title('Peaks in ECG'),ylabel('Magnitude'), xlabel('Time (s)'),grid on, axis tight
 legend('ECG', 'R')
 %% INTERVALS RR
 figure
 title('RR intervals')
-RRinterval = diff(TR1);
-plot((1:length(TR1)-1)/60,RRinterval)
+RRinterval1 = diff(TR1);
+RRinterval2 = diff(TR2);
+RRinterval3 = diff(TR3);
+RRinterval4 = diff(TR4);
+RRinterval5 = diff(TR5);
+RRinterval6 = diff(TR6);
+RRinterval7 = diff(TR7);
+RRintMean1 = mean(RRinterval1);
+RRintMean2= mean(RRinterval2);
+RRintMean3= mean(RRinterval3);
+RRintMean4= mean(RRinterval4);
+RRintMean5= mean(RRinterval5);
+RRintMean6= mean(RRinterval6);
+RRintMean7= mean(RRinterval7);
+disp(['1. El intervalo RR promedio es ',num2str(RRintMean1),' segundos'])
+disp(['2. El intervalo RR promedio es ',num2str(RRintMean2),' segundos'])
+disp(['3. El intervalo RR promedio es ',num2str(RRintMean3),' segundos'])
+disp(['4. El intervalo RR promedio es ',num2str(RRintMean4),' segundos'])
+disp(['6. El intervalo RR promedio es ',num2str(RRintMean5),' segundos'])
+disp(['5. El intervalo RR promedio es ',num2str(RRintMean6),' segundos'])
+disp(['7. El intervalo RR promedio es ',num2str(RRintMean7),' segundos'])
+plot((1:length(TR1)-1)/60,RRinterval1)
 xlabel('Tiempo (min)');
 ylabel('RR (sec)');
 h_RR = get(gca);
 
 %% PULSACIONES
 title('Càlculo de las pulsaciones por minuto')
-plot((1:length(TR1)-1)/60,1./RRinterval*60,...
-    (1:length(TR1)-1)/60,mean(1./RRinterval*60),'ro');
+plot((1:length(TR1)-1)/60,1./RRinterval1*60,...
+    (1:length(TR1)-1)/60,mean(1./RRinterval1*60),'ro');
 ylabel('Pulsaciones por minuto')
 
 %% Peaks detecion with wvs
@@ -75,9 +106,10 @@ ylabel('Pulsaciones por minuto')
 % wavelet resembles the QRS complex, which makes it a good choice for QRS
 % detection. To illustrate this more clearly, extract a QRS complex and plot
 % the result with a dilated and translated 'sym4' wavelet for comparison.
+
 %[mpdict,~,~,longs] = wmpdictionary(numel(ECGa(1:m)),'lstcpt',{{'sym4',3}});
 
-DetrendedECG = Detrending(ECGa,10);
-Medians = ECGa-DetrendedECG;
+DetrendedECG = Detrending(ECGSquared,10);
+Medians = ECGSquared-DetrendedECG;
 figure
-plot(Medians),title('Drift baseline'),axis tight,grid on,xlabel('samples'),ylabel('amplitude')
+plot(Medians(1:m)),title('Drift baseline'),axis tight,grid on,xlabel('samples'),ylabel('amplitude')
