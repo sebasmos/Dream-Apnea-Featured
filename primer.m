@@ -4,7 +4,6 @@ close all;
 clear all;
 addpath('/Users/alejandralandinez/Documents/MATLAB/mcode');
 
-
 %% Se usara la base de datos apnea-ecg, bajamos todas las señales de 
 %entrenamiento, las cuales son 8. Estas vienen con toda la informacion, y
 %tiene los siguientes canales:
@@ -20,9 +19,8 @@ for i=1:3
     names{i+4}=string;
 end
 names{end}='b01er';
-
-
 N =1000000; %declaro esto para sacar 60000 muestras equivalentes a 
+
 
 for i=1:8
     BaseDatos= strcat({'apnea-ecg/'},names{i});
