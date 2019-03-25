@@ -79,7 +79,8 @@ ECG1=ECG(1,(1:12000));
 dECG1=detrend(ECG1);
 ECGF = (abs(dECG1)).^2;
 plot((1:12000)/fs,ECGF,(1:12000)/fs,ECG1),grid on, axis tight;
-[PKSECG,LOCSECG]=GetECGPeakPoints(ECGF,1);
+[PKSECG,LOCSECG]=GetECGPeakPoints(ECGF,max(ECGF)*0.4);
+RR=diff(LOCSECG);
 
 % 
 % figure(1)
@@ -90,4 +91,7 @@ plot((1:12000)/fs,ECGF,(1:12000)/fs,ECG1),grid on, axis tight;
 % figure(2)
 % subplot(2,1,1), plot(t30s,ECG(1,(1:3000))'),grid on, axis tight
 % subplot(2,1,2), plot(t30s,SpO2(1,(1:3000))'),grid on, axis tight
+
+%%
+
 
