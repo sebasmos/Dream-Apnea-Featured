@@ -6,7 +6,7 @@ addpath('C:\MATLAB2018\MATLAB\mcode\BioMedicine\Dream Abnea\BiomedicasFinal\apne
 m = 3000;
 % NUMBER OF DATASETS 
 N = 7;
-% STRING MEMORY BANK
+% STRINGS MEMORY BANK
 names=cell(8,1);
 for i = 1:4
     dbNames = strcat({'a0'},int2str(i),{'erm.mat'});
@@ -113,3 +113,34 @@ DetrendedECG = Detrending(ECGSquared,10);
 Medians = ECGSquared-DetrendedECG;
 figure
 plot(Medians(1:m)),title('Drift baseline'),axis tight,grid on,xlabel('samples'),ylabel('amplitude')
+%% Señal Respiratoria
+
+BreathA = FullRespA(1:end,:).^2;
+
+[RRespA,TRRespA]=findpeaks(BreathA(1:end,1),Fs,'MinPeakHeight',0.3,'MinPeakDistance',35);
+findpeaks(BreathA(1:end,1),Fs,'MinPeakHeight',0.3,'MinPeakDistance',35);
+RRintervalRespA = diff(TRRespA); % 203 x 1, 203 intervalos almacenados
+% 10 segundos equivalen a 100 hz * 10 seg = 1000 muestras
+meanRRintervalRespA = mean(RRintervalRespA);
+aux = 0;
+for p = 1:length(RRintervalRespA)
+    if RRintervalRespA(p) > meanRRintervalRespA 
+        ApneaRespA = 1;
+        aux = [aux ApneaRespA];
+    else 
+        ApneaRespA = 0;
+        aux = [aux ApneaRespA];
+    end
+end
+ApneaEventsWithRespA = aux;
+plot(ApneaEventsWithRespA),title('Apnea events')
+ApneaEventsA = length(ApneaEventsWithRespA(ApneaEventsWithRespA==1));
+disp(['Apnea events are: ',num2str(ApneaEventsA),' in this dataset'])
+% anotaciones
+[ana01er]=rdann('apnea-ecg/a01er','apn');
+figure
+plot(BreathA((1:end),1))
+hold on
+%plot(TRRespA,RRespA,'v')
+hold on
+plot(ana01er,BreathA(ana01er),'k*')
