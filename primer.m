@@ -133,6 +133,30 @@ hold on
 plot(qrs,ECGSquared(qrs),'k*')
 xlabel('Seconds')
 title('R Peaks Localized by Wavelet Transform with Automatic Annotations')
+
+%% PROCESAMIENTO DE SEÑAL SP02
+m=6000;
+sp=FullSPO2(1,(66001:96000));
+j=1;
+pace=50;
+for i=1:pace:length(sp)
+    mediasp(j)=mean(sp(i:i+pace-1));
+    j=j+1;
+end
+slope=diff(mediasp);
+slope2=downsample(slope,2);
+[PKSSPO,LOCSSPO]=findpeaks(slope2)
+%% PROCESAMIENTO DE SEÑALES RESPIRATORIAS
+m=30000;
+
+rsigc=FullrespC(1,(12001:m));
+rsiga=FullrespA(1,(12001:m));
+t3m=(0:length(rsigc)-1)/fs;
+drsigc=detrend(rsigc);
+drsiga=detrend(rsiga);
+subplot(2,1,1), plot(t3m,drsiga),grid on, axis tight
+subplot(2,1,2), plot(t3m,drsigc),grid on, axis tight
+
 %% Processing with wavelets
 m=120000;
 ecgsig=FullECG(1,(1:m));
@@ -154,15 +178,3 @@ xlabel('Seconds')
 title('R Peaks Localized by Wavelet Transform with Automatic Annotations')
 RRw=diff(WAVLOCS);
 meanRRw=mean(RRw)/fs;
-
-
-%% PROCESAMIENTO DE SEÑALES RESPIRATORIAS
-m=30000;
-
-rsigc=FullrespC(1,(12001:m));
-rsiga=FullrespA(1,(12001:m));
-t3m=(0:length(rsigc)-1)/fs;
-drsigc=detrend(rsigc);
-drsiga=detrend(rsiga);
-subplot(2,1,1), plot(t3m,drsiga),grid on, axis tight
-subplot(2,1,2), plot(t3m,drsigc),grid on, axis tight
