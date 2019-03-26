@@ -121,18 +121,6 @@ BreathA = FullRespA(1:end,:).^2;
 findpeaks(BreathA(1:end,1),Fs,'MinPeakHeight',0.3,'MinPeakDistance',35);
 RRintervalRespA = diff(TRRespA); % 203 x 1, 203 intervalos almacenados
 % 10 segundos equivalen a 100 hz * 10 seg = 1000 muestras
-meanRRintervalRespA = mean(RRintervalRespA);
-aux = 0;
-for p = 1:length(RRintervalRespA)
-    if RRintervalRespA(p) > meanRRintervalRespA 
-        ApneaRespA = 1;
-        aux = [aux ApneaRespA];
-    else 
-        ApneaRespA = 0;
-        aux = [aux ApneaRespA];
-    end
+if RRintervalRespA > 10 
+    
 end
-ApneaEventsWithRespA = aux;
-plot(ApneaEventsWithRespA),title('Apnea events')
-% anotaciones
-[ana01er]=rdann('apnea-ecg/a01er','apn');
