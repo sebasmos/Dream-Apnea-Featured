@@ -1,3 +1,4 @@
+
 function class_training = getclass(registro)
 switch(registro)
     case 1
@@ -36,3 +37,4 @@ switch(registro)
 end
 
 end    
+

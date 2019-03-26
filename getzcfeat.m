@@ -1,4 +1,3 @@
-%
 % GETZCFEAT Gets the ZC feature (zero crossing).
 %
 % feat = getsscfeat(x,deadzone,winsize,wininc,datawin,dispstatus)
@@ -86,3 +85,4 @@ end
 if dispstatus
     close(h)
 end
+

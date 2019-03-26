@@ -1,3 +1,4 @@
+
 clc;
 close all;
 clear all;
@@ -95,7 +96,7 @@ ylabel('RR (sec)');
 h_RR = get(gca);
 
 %% PULSACIONES
-title('Càlculo de las pulsaciones por minuto')
+title('Cï¿½lculo de las pulsaciones por minuto')
 plot((1:length(TR1)-1)/60,1./RRinterval1*60,...
     (1:length(TR1)-1)/60,mean(1./RRinterval1*60),'ro');
 ylabel('Pulsaciones por minuto')
@@ -115,7 +116,7 @@ DetrendedECG = Detrending(ECGSquared,10);
 Medians = ECGSquared-DetrendedECG;
 figure
 plot(Medians(1:m)),title('Drift baseline'),axis tight,grid on,xlabel('samples'),ylabel('amplitude')
-%% Señal Respiratoria
+%% Seï¿½al Respiratoria
 
 BreathA = FullRespA(1:end,:).^2;
 [RRespA,TRRespA]=findpeaks(BreathA(1:end,1),Fs,'MinPeakHeight',0.4,'MinPeakDistance',35);
@@ -147,17 +148,17 @@ disp(['Apnea events are: ',num2str(ApneaEventsA),' in this dataset'])
 % plot(ana01er,BreathA(ana01er),'k*')
 
 %% 3. EXTRACCION DE CARACTERISTICAS
-%   3.1 Extracción del rms de la envolvente de la señal y cruces por cero
+%   3.1 Extracciï¿½n del rms de la envolvente de la seï¿½al y cruces por cero
 mc1=[]; 
 mc2=[];
 % CARACTERISTICAS:
-% 1. Valor RMS de la envolvente de la señal.
-% 2. Tasa de cruces por cero de la señal.
+% 1. Valor RMS de la envolvente de la seï¿½al.
+% 2. Tasa de cruces por cero de la seï¿½al.
 ECGm = FullECG';
-%Declaramos el tamaño de la ventana
+%Declaramos el tamaï¿½o de la ventana
 win_size = 256;
 win_inc = 128; % El solapamiento de la ventana es del 50% en entrenamiento
-%Extraemos las características
+%Extraemos las caracterï¿½sticas
 k = 1;
 %for i=1:7
     for j=1:6000:996000
@@ -182,4 +183,5 @@ class_training(130:166) = 0;
 mc5 = SPO2Detector(FullSpO2((1:966000),1));
 mc5 = [mc5 zeros(1,length(mc1)-length(mc5))];
 feature_training = [mc1' mc2(:,1) mc2(:,2) mc2(:,3) mc2(:,4) mc3' mc4' mc5'];
+
 [Data_training,PC_training,Ws_training,W_training,Ap_training] = entrenamiento1(feature_training,class_training);

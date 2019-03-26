@@ -1,4 +1,3 @@
-%
 % GETMAVFEAT Gets the MAV feature (Mean Absolute Value).
 %
 % feat = getmavfeat(x,winsize,wininc,datawin,dispstatus)
@@ -71,3 +70,4 @@ end
 if dispstatus
     close(h)
 end
+

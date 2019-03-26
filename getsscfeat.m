@@ -1,4 +1,3 @@
-%
 % GETSSCFEAT Gets the slope sign change feature.
 %
 % feat = getsscfeat(x,deadzone,winsize,wininc,datawin)

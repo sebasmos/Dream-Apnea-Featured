@@ -1,4 +1,3 @@
-%
 % GETRMSFEAT Gets the RMS feature (Root Mean Square).
 %
 % feat = getrmsfeat(x,winsize,wininc,datawin,dispstatus)

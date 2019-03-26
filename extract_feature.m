@@ -1,3 +1,4 @@
+
 function [feature1,feature2,feature3,feature4] = extract_feature(data,win_size,win_inc)
 
 if nargin < 3
