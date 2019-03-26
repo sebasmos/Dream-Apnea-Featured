@@ -105,26 +105,26 @@ end
 dECG=detrend(FullECG');
 dECG=dECG';
 ECGSquared=abs(dECG).^2;
-m= 6000;  %windows size 5 minutos es decir 300000 muestra
-[PKSECG,LOCSECG]=GetECGPeakPoints(ECGSquared(1,(1:m)),0.08);
+m= 120000;  %windows size 5 minutos es decir 300000 muestra
+[PKSECG,LOCSECG]=GetECGPeakPoints(ECGSquared(1,(1:m)),0.06,6);
 RR=diff(LOCSECG);
-
+meanRR=mean(RR)/fs;
 % Bajamos las anotaciones qrs que tiene el dataset, aunque esten sujetas a
 % fallos pueden ayudarnos a fijar mejor los picos R
 
-[qrsa01er]=rdann('apnea-ecg/a01er','qrs');
-[qrsa02er]=rdann('apnea-ecg/a02er','qrs');
-[qrsa03er]=rdann('apnea-ecg/a03er','qrs');
-[qrsa04er]=rdann('apnea-ecg/a04er','qrs');
-[qrsc01er]=rdann('apnea-ecg/c01er','qrs');
-[qrsc02er]=rdann('apnea-ecg/c02er','qrs');
-[qrsc03er]=rdann('apnea-ecg/c03er','qrs');
-[qrsb01er]=rdann('apnea-ecg/b01er','qrs');
+% [qrsa01er]=rdann('apnea-ecg/a01er','qrs');
+% [qrsa02er]=rdann('apnea-ecg/a02er','qrs');
+% [qrsa03er]=rdann('apnea-ecg/a03er','qrs');
+% [qrsa04er]=rdann('apnea-ecg/a04er','qrs');
+% [qrsc01er]=rdann('apnea-ecg/c01er','qrs');
+% [qrsc02er]=rdann('apnea-ecg/c02er','qrs');
+% [qrsc03er]=rdann('apnea-ecg/c03er','qrs');
+% [qrsb01er]=rdann('apnea-ecg/b01er','qrs');
 
 %1 minuto corresponde hasta 5974, este numero se cambia en caso de que se
 %deseen anotaciones de mas de un minuto
 
-qrs=qrsa01er(qrsa01er<=5974);
+qrs=qrsa01er(qrsa01er<=119941);
 figure
 plot(ECGSquared(1,(1:m)))
 hold on
@@ -134,19 +134,27 @@ plot(qrs,ECGSquared(qrs),'k*')
 xlabel('Seconds')
 title('R Peaks Localized by Wavelet Transform with Automatic Annotations')
 %% Processing with wavelets
+m=120000;
 ecgsig=FullECG(1,(1:m));
 wt = modwt(ecgsig,5);
 wtrec = zeros(size(wt));
 wtrec(4:5,:) = wt(4:5,:);
-y = imodwt(wtrec,'sym4');
-y = abs(y).^2;  
-[WAVPKS,WAVLOCS] = GetECGPeakPoints(y,);
+h = imodwt(wtrec,'sym4');
+h = abs(h).^2;
+y=hampel(h);
+[WAVPKS,WAVLOCS] = GetECGPeakPoints(y,0.7.*max(y));
 figure
-plot(t1m,y)
+plot((0:m-1)/fs,h,(0:m-1)/fs,y),grid on, axis tight,
+%%
+figure
+plot(y)
 hold on
 plot(WAVLOCS,WAVPKS,'ro')
 xlabel('Seconds')
 title('R Peaks Localized by Wavelet Transform with Automatic Annotations')
+RRw=diff(WAVLOCS);
+meanRRw=mean(RRw)/fs;
+
 
 %% PROCESAMIENTO DE SEÑALES RESPIRATORIAS
 m=30000;
