@@ -1,9 +1,11 @@
 clc;
 close all;
 clear all;
+
+addpath('C:\Program Files\MATLAB\R2018a\prtools')
 addpath('C:\MATLAB2018\MATLAB\mcode\BioMedicine\Dream Abnea\BiomedicasFinal\apnea-ecg');
 % m represents the size 
-m = 3000;
+m = 6000;
 % NUMBER OF DATASETS 
 N = 7;
 % STRINGS MEMORY BANK
@@ -116,15 +118,14 @@ plot(Medians(1:m)),title('Drift baseline'),axis tight,grid on,xlabel('samples'),
 %% Señal Respiratoria
 
 BreathA = FullRespA(1:end,:).^2;
-
-[RRespA,TRRespA]=findpeaks(BreathA(1:end,1),Fs,'MinPeakHeight',0.3,'MinPeakDistance',35);
-findpeaks(BreathA(1:end,1),Fs,'MinPeakHeight',0.3,'MinPeakDistance',35);
+[RRespA,TRRespA]=findpeaks(BreathA(1:end,1),Fs,'MinPeakHeight',0.4,'MinPeakDistance',35);
+findpeaks(BreathA(1:end,1),Fs,'MinPeakHeight',0.4,'MinPeakDistance',35);
 RRintervalRespA = diff(TRRespA); % 203 x 1, 203 intervalos almacenados
 % 10 segundos equivalen a 100 hz * 10 seg = 1000 muestras
 meanRRintervalRespA = mean(RRintervalRespA);
 aux = 0;
 for p = 1:length(RRintervalRespA)
-    if RRintervalRespA(p) > meanRRintervalRespA 
+    if RRintervalRespA(p) > 10 
         ApneaRespA = 1;
         aux = [aux ApneaRespA];
     else 
@@ -138,9 +139,47 @@ ApneaEventsA = length(ApneaEventsWithRespA(ApneaEventsWithRespA==1));
 disp(['Apnea events are: ',num2str(ApneaEventsA),' in this dataset'])
 % anotaciones
 [ana01er]=rdann('apnea-ecg/a01er','apn');
-figure
-plot(BreathA((1:end),1))
-hold on
-%plot(TRRespA,RRespA,'v')
-hold on
-plot(ana01er,BreathA(ana01er),'k*')
+% figure
+% plot(BreathA((1:end),1))
+% hold on
+% %plot(TRRespA,RRespA,'v')
+% hold on
+% plot(ana01er,BreathA(ana01er),'k*')
+
+%% 3. EXTRACCION DE CARACTERISTICAS
+%   3.1 Extracción del rms de la envolvente de la señal y cruces por cero
+mc1=[]; 
+mc2=[];
+% CARACTERISTICAS:
+% 1. Valor RMS de la envolvente de la señal.
+% 2. Tasa de cruces por cero de la señal.
+ECGm = FullECG';
+%Declaramos el tamaño de la ventana
+win_size = 256;
+win_inc = 128; % El solapamiento de la ventana es del 50% en entrenamiento
+%Extraemos las características
+k = 1;
+%for i=1:7
+    for j=1:6000:996000
+        temp=ECGm(1,(j:j+6000-1));
+        [feature1,feature2,feature3,feature4] = extract_feature(temp',win_size,win_inc);
+        mc1(k)=mean(feature1);
+        mc2(k,:)=mean(feature2);
+        mc3(k)= mean(feature3);
+        mc4(k)= mean(feature4);
+        k = k + 1;       
+    end
+%end
+%% anotaciones
+% a01
+class_training = ones(166,1);
+class_training(1:12) = 0;
+% a01
+class_training = ones(166,1);
+class_training(1:20) = 0;
+class_training(130:166) = 0;
+%
+mc5 = SPO2Detector(FullSpO2((1:966000),1));
+mc5 = [mc5 zeros(1,length(mc1)-length(mc5))];
+feature_training = [mc1' mc2(:,1) mc2(:,2) mc2(:,3) mc2(:,4) mc3' mc4' mc5'];
+[Data_training,PC_training,Ws_training,W_training,Ap_training] = entrenamiento1(feature_training,class_training);
