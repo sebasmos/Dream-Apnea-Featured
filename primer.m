@@ -112,14 +112,14 @@ meanRR=mean(RR)/fs;
 % Bajamos las anotaciones qrs que tiene el dataset, aunque esten sujetas a
 % fallos pueden ayudarnos a fijar mejor los picos R
 
-% [qrsa01er]=rdann('apnea-ecg/a01er','qrs');
-% [qrsa02er]=rdann('apnea-ecg/a02er','qrs');
-% [qrsa03er]=rdann('apnea-ecg/a03er','qrs');
-% [qrsa04er]=rdann('apnea-ecg/a04er','qrs');
-% [qrsc01er]=rdann('apnea-ecg/c01er','qrs');
-% [qrsc02er]=rdann('apnea-ecg/c02er','qrs');
-% [qrsc03er]=rdann('apnea-ecg/c03er','qrs');
-% [qrsb01er]=rdann('apnea-ecg/b01er','qrs');
+[qrsa01er]=rdann('apnea-ecg/a01er','qrs');
+[qrsa02er]=rdann('apnea-ecg/a02er','qrs');
+[qrsa03er]=rdann('apnea-ecg/a03er','qrs');
+[qrsa04er]=rdann('apnea-ecg/a04er','qrs');
+[qrsc01er]=rdann('apnea-ecg/c01er','qrs');
+[qrsc02er]=rdann('apnea-ecg/c02er','qrs');
+[qrsc03er]=rdann('apnea-ecg/c03er','qrs');
+[qrsb01er]=rdann('apnea-ecg/b01er','qrs');
 
 %1 minuto corresponde hasta 5974, este numero se cambia en caso de que se
 %deseen anotaciones de mas de un minuto
@@ -136,16 +136,18 @@ title('R Peaks Localized by Wavelet Transform with Automatic Annotations')
 
 %% PROCESAMIENTO DE SEÑAL SP02
 m=6000;
-sp=FullSPO2(1,(66001:96000));
+sp=FullSPO2(1,(66001:102000));
 j=1;
-pace=50;
+pace=50; %cada medio segundo saco una media de los valores
 for i=1:pace:length(sp)
     mediasp(j)=mean(sp(i:i+pace-1));
     j=j+1;
 end
 slope=diff(mediasp);
 slope2=downsample(slope,2);
-[PKSSPO,LOCSSPO]=findpeaks(slope2)
+slope2=upsample(slope2,2);
+
+%[PKSSPO,LOCSSPO]=findpeaks(slope2);
 %% PROCESAMIENTO DE SEÑALES RESPIRATORIAS
 m=30000;
 

@@ -4,11 +4,11 @@
 % minW: Ancho min
 % dist min : d
 
-function [ECGPeaks,ECGLocs] = GetECGPeakPoints(s,minH,minDD)
+function [ECGPeaks,ECGLocs] = GetECGPeakPoints(s,minH)
 
-[ECGPeaks,ECGLocs] = findpeaks(s,'MinPeakHeight',minH,'minPeakDistance',minDD);
+[ECGPeaks,ECGLocs] = findpeaks(s,'MinPeakHeight',minH);
 figure
-findpeaks(s,'MinPeakHeight',minH,'minPeakDistance',minDD);
+findpeaks(s,'MinPeakHeight',minH);
 hold on
 plot(ECGLocs,ECGPeaks,'o')   
 xlabel('Tiempo');
