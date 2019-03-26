@@ -134,5 +134,13 @@ for p = 1:length(RRintervalRespA)
 end
 ApneaEventsWithRespA = aux;
 plot(ApneaEventsWithRespA),title('Apnea events')
+ApneaEventsA = length(ApneaEventsWithRespA(ApneaEventsWithRespA==1));
+disp(['Apnea events are: ',num2str(ApneaEventsA),' in this dataset'])
 % anotaciones
 [ana01er]=rdann('apnea-ecg/a01er','apn');
+figure
+plot(BreathA((1:end),1))
+hold on
+%plot(TRRespA,RRespA,'v')
+hold on
+plot(ana01er,BreathA(ana01er),'k*')
