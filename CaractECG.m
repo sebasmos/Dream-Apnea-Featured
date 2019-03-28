@@ -1,34 +1,41 @@
-%% POR MEDIO DEL METODO DE ELEVAR LA SEÑAL AL CUADRADO
-
-% Señal ECG al cuadrado
-dECG=detrend(FullECG');
-dECG=dECG';
-ECGSquared=abs(dECG).^2;
-m= 120000;  %windows size 5 minutos es decir 300000 muestra
-[PKSECG,LOCSECG]=GetECGPeakPoints(ECGSquared(1,(1:m)),0.06,6);
-RR=diff(LOCSECG);
-meanRR=mean(RR)/fs;
-% Bajamos las anotaciones qrs que tiene el dataset, aunque esten sujetas a
-% fallos pueden ayudarnos a fijar mejor los picos R
-
-[qrsa01er]=rdann('apnea-ecg/a01er','qrs');
-[qrsa02er]=rdann('apnea-ecg/a02er','qrs');
-[qrsa03er]=rdann('apnea-ecg/a03er','qrs');
-[qrsa04er]=rdann('apnea-ecg/a04er','qrs');
-[qrsc01er]=rdann('apnea-ecg/c01er','qrs');
-[qrsc02er]=rdann('apnea-ecg/c02er','qrs');
-[qrsc03er]=rdann('apnea-ecg/c03er','qrs');
-[qrsb01er]=rdann('apnea-ecg/b01er','qrs');
-
-%1 minuto corresponde hasta 5974, este numero se cambia en caso de que se
-%deseen anotaciones de mas de un minuto
-
-qrs=qrsa01er(qrsa01er<=119941);
-figure
-plot(ECGSquared(1,(1:m)))
-hold on
-plot(LOCSECG,PKSECG,'v')
-hold on
-plot(qrs,ECGSquared(qrs),'k*')
-xlabel('Seconds')
-title('R Peaks Localized by Wavelet Transform with Automatic Annotations')
+%Esta funcion se encarga de ver cuándo hay un aumento en el ritmo cardiaco
+%por cada minuto, haciendo uso de la desviación estandar en los picos RR y
+%comparando si se desvía mas de 2 veces la desviación estandar. En caso de
+%que se cuenten 3 o mas eventos de este tipo en un minuto, se puede decir
+%que el ritmo cardíaco ha aumentado
+%Entradas: señal que contiene el ECG y frecuencia de muestreo
+%Salidas: un vector que contiene un 1 o 0 logico dependiendo de si hubo o
+%no hubo aumento en el ritmo cardíaco (respectivamente) en ese minuto
+function heartRateArise=CaractECG(FullECG)
+    % Señal ECG al cuadrado
+    fs = 100;
+    FullECG = FullECG(1:966000);
+    dECG=detrend(FullECG');
+    dECG=dECG';
+    ECGSquared=abs(dECG).^2;
+    [PKSECG,LOCSECG]=findpeaks(ECGSquared,'MinPeakHeight',0.02,'MinPeakDistance',6);
+    j=1;
+    pace=6000;
+    cont=0;
+    while(pace<=length(ECGSquared))
+        liminf=LOCSECG(pace-6000+1<LOCSECG);
+        limsup=liminf(liminf<=pace);
+        RRtime=diff(limsup)/fs;
+        stdvtime=std(RRtime);
+        difftiempos=diff(RRtime);
+        for i=1:length(difftiempos)
+            if(abs(difftiempos(i))>(2*stdvtime))
+                cont=cont+1;
+            end
+        end
+        if(cont>=3)
+            heartRateArise(j)=1;
+        else
+            heartRateArise(j)=0;
+        end
+        pace=pace+6000;
+        j=j+1;
+        cont=0;
+    end
+    
+end

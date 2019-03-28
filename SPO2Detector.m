@@ -14,9 +14,9 @@ function [logicSPO]=SPO2Detector(sp)
     n=1;
     minequivalente=120;
     contador=0;
-    while(k<length(slope2))
+    while(k<length(slope2)-80)
         signal=slope2(k+1:k+minequivalente);
-        [PKSSPO,LOCSSPO]=findpeaks(signal,'MinPeakHeight',0.01);
+        [PKSSPO,LOCSSPO]=findpeaks(signal,'MinPeakHeight',0.001);
         intervalos=diff(LOCSSPO);
         for i=1:length(intervalos)
             if(intervalos(i)<5)
